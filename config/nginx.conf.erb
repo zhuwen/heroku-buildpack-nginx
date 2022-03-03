@@ -9,39 +9,18 @@ events {
 }
 
 http {
-	gzip on;
-	gzip_comp_level 2;
-	gzip_min_length 512;
-	gzip_proxied any; # Heroku router sends Via header
-
 	server_tokens off;
 
 	log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
 	access_log <%= ENV['NGINX_ACCESS_LOG_PATH'] || 'logs/nginx/access.log' %> l2met;
 	error_log <%= ENV['NGINX_ERROR_LOG_PATH'] || 'logs/nginx/error.log' %>;
-
-	include mime.types;
-	default_type application/octet-stream;
 	sendfile on;
 
-
 	server {
- 
     		resolver 8.8.8.8;
- 
-    		resolver_timeout 5s;
- 
-    		listen <%= ENV["PORT"] %>;
- 
+    		listen 10108;
     		location / {
 	  		proxy_pass $scheme://$host$request_uri; 
-	  		proxy_set_header Host $http_host; 
-	  		proxy_buffers 256 4k; 
-	  		proxy_max_temp_file_size 0;	 
-	  		proxy_connect_timeout 30;	 
-	  		proxy_cache_valid 200 302 10m;	 
-	  		proxy_cache_valid 301 1h; 
-	  		proxy_cache_valid any 1m;
     		}
 	}
 }
